@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Exchange MB</string>
+    <string name="balance_is_empty">Не достаточно средста на балансе</string>
+    <string name="need_set_amount">Необходимо ввести нужно сумму!</string>
+    <string name="transaction_success">Превосходно, конвертация успешно проведена!</string>
+    <string name="transaction_failed">Мы не смогли провести конвертацию :(</string>
+    <string name="error_one">Это один и тот же счёт, операция невозможна</string>
+    <string name="exchange_it">Exchange it!</string>
+    <string name="download_exception">Произошла ощибка при загрузке данных</string>
+    <string name="sum_is_negative">Сумма не может быть отрицательной</string>
+    <string name="error_convert" tools:ignore="ExtraTranslation">Произошла ошибка при конвертации</string>
+</resources>
