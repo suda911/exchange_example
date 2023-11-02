@@ -45,10 +45,44 @@
             color: var(--tg-theme-hint-color);
             font-style: italic;
         }
+        .loader {
+            display: none;
+            text-align: center;
+        }
+
+        .loader > img {
+            max-width: 32px;
+            max-height: 32px;
+        }
+
+        img.rot {
+            animation: 1s linear 0s normal none infinite running rot;
+            -webkit-animation: 1s linear 0s normal none infinite running rot;
+            width: 100px;
+        }
+        @keyframes rot {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @-webkit-keyframes rot {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
     <div id="events-list"></div>
+    <div class="loader" id="loader">
+        <img class="rot" src="https://cdn.iconscout.com/icon/free/png-256/grinning-face-smile-emoji-happy-37705.png" alt="Loader">
+    </div>
 
     <script>
         // Заглушка для данных (замените на вашу логику запроса к API)
@@ -63,7 +97,24 @@
                     link: 'ссылка_на_событие'
                 });
             }
-            return Promise.resolve(data);
+            // return Promise.resolve(data);
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(data);
+                }, 2000); // Задержка в 2 секунды
+            });
+        };
+
+        // Функция для отображения лоадера
+        const showLoader = () => {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+        };
+
+        // Функция для скрытия лоадера
+        const hideLoader = () => {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
         };
 
         // Функция для отображения карточек событий
@@ -124,16 +175,19 @@
             .then(data => {
                 renderEventCards(data);
                 offset += data.length;
+                hideLoader(); // Скрываем лоадер после загрузки данных
             });
 
         // Обработчик прокрутки страницы для подгрузки данных
         window.addEventListener('scroll', () => {
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                showLoader(); // Показываем лоадер перед загрузкой данных
                 // Подгружаем новые данные при достижении конца страницы
                 fetchData(offset, limit)
                     .then(data => {
                         renderEventCards(data);
                         offset += data.length;
+                        hideLoader(); // Скрываем лоадер после загрузки данных
                     });
             }
         });
