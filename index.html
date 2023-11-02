@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пагинируемый список с карточками эвентов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* CSS для стилизации карточек эвентов (можете настроить по вашему усмотрению) */
         .event-card {
@@ -15,6 +16,7 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            background-color: var(--tg-theme-bg-color);
         }
 
         .event-date {
@@ -30,7 +32,18 @@
 
         .event-link {
             text-decoration: none;
-            color: #0070c9;
+            color: var(--tg-theme-link-color);
+        }
+
+        .event-name {
+            /* Ваши настройки для названия события, например, красный текст */
+            color: var(--tg-theme-text-color);
+        }
+
+        .event-description {
+            /* Ваши настройки для описания события, например, курсив */
+            color: var(--tg-theme-hint-color);
+            font-style: italic;
         }
     </style>
 </head>
@@ -44,8 +57,9 @@
             for (let i = offset; i < offset + limit; i++) {
                 data.push({
                     name: `Событие ${i}`,
+                    description: `Описание события ${i}`,
                     date: `2 ноября 2023 года`,
-                    icon: 'https://coindar.org/images/coins/dopex/64x64.png',
+                    icon: 'https://coindar.org/images/coins/celestia/64x64.png',
                     link: 'ссылка_на_событие'
                 });
             }
@@ -55,39 +69,50 @@
         // Функция для отображения карточек событий
         const renderEventCards = (events) => {
             const eventsList = document.getElementById('events-list');
-            let currentDate = null; // Текущая дата
+            const eventsByDate = {};
 
             events.forEach(event => {
-                // Если дата события изменилась, добавляем карточку с датой
-                if (event.date !== currentDate) {
-                    const dateCard = document.createElement('div');
-                    dateCard.className = 'event-card';
-                    dateCard.classList.add('event-date');
-                    dateCard.textContent = event.date;
-                    eventsList.appendChild(dateCard);
-                    currentDate = event.date;
+                if (!eventsByDate[event.date]) {
+                    eventsByDate[event.date] = [];
                 }
-
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-
-                const icon = document.createElement('img');
-                icon.className = 'event-icon';
-                icon.src = event.icon;
-
-                const name = document.createElement('div');
-                name.textContent = event.name;
-
-                const link = document.createElement('a');
-                link.className = 'event-link';
-                link.href = event.link;
-                link.textContent = 'Перейти к событию';
-
-                eventCard.appendChild(icon);
-                eventCard.appendChild(name);
-                eventCard.appendChild(link);
-                eventsList.appendChild(eventCard);
+                eventsByDate[event.date].push(event);
             });
+
+            for (const date in eventsByDate) {
+                const dateCard = document.createElement('div');
+                dateCard.className = 'event-card';
+                dateCard.classList.add('event-date');
+                dateCard.textContent = date;
+                eventsList.appendChild(dateCard);
+
+                eventsByDate[date].forEach(event => {
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'event-card';
+
+                    const icon = document.createElement('img');
+                    icon.className = 'event-icon';
+                    icon.src = event.icon;
+
+                    const name = document.createElement('div');
+                    name.className = 'event-name'; // Применяем стиль к названию события
+                    name.textContent = event.name;
+
+                    const description = document.createElement('div');
+                    description.className = 'event-description'; // Применяем стиль к описанию события
+                    description.textContent = event.description;
+
+                    const link = document.createElement('a');
+                    link.className = 'event-link';
+                    link.href = event.link;
+                    link.textContent = 'Перейти к событию';
+
+                    eventCard.appendChild(icon);
+                    eventCard.appendChild(name);
+                    eventCard.appendChild(description);
+                    eventCard.appendChild(link);
+                    eventsList.appendChild(eventCard);
+                });
+            }
         };
 
         // Параметры пагинации
