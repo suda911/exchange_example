@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пагинируемый список с карточками эвентов</title>
+    <style>
+        /* CSS для стилизации карточек эвентов (можете настроить по вашему усмотрению) */
+        .event-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .event-date {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .event-icon {
+            max-width: 32px;
+            max-height: 32px;
+        }
+
+        .event-link {
+            text-decoration: none;
+            color: #0070c9;
+        }
+    </style>
+</head>
+<body>
+    <div id="events-list"></div>
+
+    <script>
+        // Заглушка для данных (замените на вашу логику запроса к API)
+        const fetchData = (offset, limit) => {
+            const data = [];
+            for (let i = offset; i < offset + limit; i++) {
+                data.push({
+                    name: `Событие ${i}`,
+                    date: `2 ноября 2023 года`,
+                    icon: 'https://coindar.org/images/coins/dopex/64x64.png',
+                    link: 'ссылка_на_событие'
+                });
+            }
+            return Promise.resolve(data);
+        };
+
+        // Функция для отображения карточек событий
+        const renderEventCards = (events) => {
+            const eventsList = document.getElementById('events-list');
+            let currentDate = null; // Текущая дата
+
+            events.forEach(event => {
+                // Если дата события изменилась, добавляем карточку с датой
+                if (event.date !== currentDate) {
+                    const dateCard = document.createElement('div');
+                    dateCard.className = 'event-card';
+                    dateCard.classList.add('event-date');
+                    dateCard.textContent = event.date;
+                    eventsList.appendChild(dateCard);
+                    currentDate = event.date;
+                }
+
+                const eventCard = document.createElement('div');
+                eventCard.className = 'event-card';
+
+                const icon = document.createElement('img');
+                icon.className = 'event-icon';
+                icon.src = event.icon;
+
+                const name = document.createElement('div');
+                name.textContent = event.name;
+
+                const link = document.createElement('a');
+                link.className = 'event-link';
+                link.href = event.link;
+                link.textContent = 'Перейти к событию';
+
+                eventCard.appendChild(icon);
+                eventCard.appendChild(name);
+                eventCard.appendChild(link);
+                eventsList.appendChild(eventCard);
+            });
+        };
+
+        // Параметры пагинации
+        let offset = 0;
+        const limit = 25;
+
+        // Загрузка первой порции данных
+        fetchData(offset, limit)
+            .then(data => {
+                renderEventCards(data);
+                offset += data.length;
+            });
+
+        // Обработчик прокрутки страницы для подгрузки данных
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                // Подгружаем новые данные при достижении конца страницы
+                fetchData(offset, limit)
+                    .then(data => {
+                        renderEventCards(data);
+                        offset += data.length;
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
